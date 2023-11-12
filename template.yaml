@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Cognito protected HTMX contact application
+Resources:
+  ContactAppGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: ContactAppGateway
+      OpenApiVersion: 3.0.1
+      StageName: stage
+  ContactApp:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: bootstrap
+      Runtime: provided.al2
+      Architectures:
+        - arm64
+      Events:
+        gatewayEvent:
+          Type: Api
+          Properties:
+            Method: any
+            Path: /{proxy+}
+            RestApiId: !Ref ContactAppGateway
+  ContactUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: contact-app-pool
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+          StringAttributeConstraints:
+            MinLength: '0'
+            MaxLength: '2048'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      AutoVerifiedAttributes:
+        - email
+  HtmxUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: htmx-contact-app
+      UserPoolId: !Ref ContactUserPool
+      GenerateSecret: false

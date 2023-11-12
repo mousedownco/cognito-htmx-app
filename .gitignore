@@ -1,2 +1,4 @@
 .idea
+.aws-sam
+samconfig.toml
 dist
