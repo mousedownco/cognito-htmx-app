@@ -1,23 +1,27 @@
 package main
 
 import (
+	"embed"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
 	"github.com/mousedownco/htmx-contact-app/contacts"
 	"github.com/mousedownco/htmx-contact-app/views"
 	"log"
 	"net/http"
+	"os"
 )
 
-var staticDir = "static"
+//go:embed static
+var staticDir embed.FS
+
 var port = ":8080"
 
 func main() {
-	cs := contacts.NewService("contacts.json")
+	cs := contacts.NewService()
 
 	r := mux.NewRouter()
-	r.PathPrefix("/static/").Handler(
-		http.StripPrefix("/static/",
-			http.FileServer(http.Dir(staticDir))))
+	r.PathPrefix("/static/").Handler(http.FileServer(http.FS(staticDir)))
 	r.Handle("/",
 		http.RedirectHandler("/contacts", http.StatusTemporaryRedirect))
 	r.Handle("/contacts",
@@ -46,8 +50,15 @@ func main() {
 	r.Handle("/contacts/{id:[0-9]+}/email", contacts.HandleEmailGet(cs)).Methods("GET")
 	r.Handle("/contacts/{id:[0-9]+}",
 		contacts.HandleDelete(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("DELETE")
-	log.Printf("Starting server on port %s", port)
-	http.Handle("/", r)
-	_ = http.ListenAndServe(port, nil)
+
+	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
+		log.Printf("Running Lambda function %s", os.Getenv("AWS_LAMBDA_FUNCTION_NAME"))
+		muxLambda := gorillamux.New(r)
+		lambda.Start(muxLambda.Proxy)
+	} else {
+		log.Printf("Starting server on port %s", port)
+		http.Handle("/", r)
+		_ = http.ListenAndServe(port, nil)
+	}
 
 }

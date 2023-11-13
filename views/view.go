@@ -2,6 +2,7 @@ package views
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"github.com/gorilla/sessions"
 	"html/template"
@@ -13,6 +14,9 @@ import (
 var TemplatesDir = "templates"
 var LayoutDir = "layout"
 var FlashName = "_flash"
+
+//go:embed templates/layout/* templates/contacts/*
+var templates embed.FS
 
 var StandardFunctions = template.FuncMap{
 	"add": func(a, b int) int { return a + b },
@@ -30,7 +34,7 @@ func NewView(layout string, files ...string) *View {
 		panic(e)
 	}
 	tmplFiles = append(tmplFiles, viewFiles(files)...)
-	tmpl, e := template.New("").Funcs(StandardFunctions).ParseFiles(tmplFiles...)
+	tmpl, e := template.New("").Funcs(StandardFunctions).ParseFS(templates, tmplFiles...)
 	if e != nil {
 		panic(e)
 	}
@@ -48,6 +52,7 @@ func (v *View) Render(w http.ResponseWriter, r *http.Request, data map[string]in
 	var rb bytes.Buffer
 	e := v.Template.ExecuteTemplate(&rb, v.Layout, vd)
 	if e != nil {
+		fmt.Printf("Error rendering template: %v\n", e)
 		http.Error(w,
 			fmt.Sprintf("Error rendering template: %v", e),
 			http.StatusInternalServerError)
@@ -57,7 +62,10 @@ func (v *View) Render(w http.ResponseWriter, r *http.Request, data map[string]in
 }
 
 func layoutFiles(dir string) ([]string, error) {
-	return filepath.Glob(dir + "/*.gohtml")
+	return []string{
+		"templates/layout/layout.gohtml",
+		"templates/layout/partial.gohtml",
+	}, nil
 }
 
 func viewFiles(files []string) []string {
