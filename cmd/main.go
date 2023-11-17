@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
+	"github.com/mousedownco/htmx-contact-app/auth"
 	"github.com/mousedownco/htmx-contact-app/contacts"
 	"github.com/mousedownco/htmx-contact-app/views"
 	"log"
@@ -19,6 +20,11 @@ var port = ":8080"
 
 func main() {
 	cs := contacts.NewService()
+
+	cog := auth.NewCognito(
+		os.Getenv("COGNITO_ENDPOINT"),
+		os.Getenv("COGNITO_CLIENT_ID"),
+		os.Getenv("COGNITO_REDIRECT_URI"))
 
 	r := mux.NewRouter()
 	r.PathPrefix("/static/").Handler(http.FileServer(http.FS(staticDir)))
@@ -50,6 +56,8 @@ func main() {
 	r.Handle("/contacts/{id:[0-9]+}/email", contacts.HandleEmailGet(cs)).Methods("GET")
 	r.Handle("/contacts/{id:[0-9]+}",
 		contacts.HandleDelete(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("DELETE")
+
+	r.Handle("/auth/code", auth.HandleCognitoCallback(cog, "/contacts")).Methods("GET")
 
 	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
 		log.Printf("Running Lambda function %s", os.Getenv("AWS_LAMBDA_FUNCTION_NAME"))
