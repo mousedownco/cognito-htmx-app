@@ -5,7 +5,11 @@ Parameters:
   gatewayStage:
     Type: String
     Description: The stage name for the API Gateway
-    Default: hold
+    Default: gw
+  userPoolDomain:
+    Type: String
+    Description: The domain name for the Cognito User Pool
+    Default: htmx-contact-app
 Resources:
   ContactAppGateway:
     Type: AWS::Serverless::Api
@@ -46,14 +50,7 @@ Resources:
             Cookies:
               Forward: all
             QueryString: true
-          AllowedMethods:
-            - GET
-            - HEAD
-            - OPTIONS
-            - PUT
-            - POST
-            - PATCH
-            - DELETE
+          AllowedMethods: [ HEAD, DELETE, POST, GET, OPTIONS, PUT, PATCH ]
           Compress: true
           TargetOriginId: ContactAppGateway
           ViewerProtocolPolicy: redirect-to-https
@@ -67,43 +64,65 @@ Resources:
               OriginProtocolPolicy: https-only
               OriginSSLProtocols:
                 - TLSv1.2
-
-#  ContactAppUserPool:
-#    Type: AWS::Cognito::UserPool
-#    Properties:
-#      UserPoolName: contact-app-pool
-#      Schema:
-#        - Name: email
-#          AttributeDataType: String
-#          Mutable: true
-#          Required: true
-#          StringAttributeConstraints:
-#            MinLength: '0'
-#            MaxLength: '2048'
-#      Policies:
-#        PasswordPolicy:
-#          MinimumLength: 8
-#          RequireLowercase: true
-#          RequireNumbers: true
-#          RequireSymbols: true
-#          RequireUppercase: true
-#      AutoVerifiedAttributes:
-#        - email
-#  HtmxUserPoolClient:
-#    Type: AWS::Cognito::UserPoolClient
-#    Properties:
-#      ClientName: htmx-contact-app
-#      UserPoolId: !Ref ContactUserPool
-#      GenerateSecret: false
+  ContactAppUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: contact-app-pool
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+          StringAttributeConstraints:
+            MinLength: '0'
+            MaxLength: '2048'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      AutoVerifiedAttributes:
+        - email
+  HtmxUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: htmx-contact-app
+      UserPoolId: !Ref ContactAppUserPool
+      GenerateSecret: false
+      CallbackURLs:
+        - !Sub 'https://${ContactAppDistribution.DomainName}/'
+      LogoutURLs:
+        - !Sub 'https://${ContactAppDistribution.DomainName}/logout'
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      AllowedOAuthFlowsUserPoolClient: true
+      SupportedIdentityProviders:
+        - COGNITO
+  HtmxUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref userPoolDomain
+      UserPoolId: !Ref ContactAppUserPool
 Outputs:
-#  UserPoolId:
-#    Description: "ID of the User Pool"
-#    Value: !Ref ContactUserPool
-#
-#  UserPoolClientId:
-#    Description: "ID of the User Pool Client"
-#    Value: !Ref HtmxUserPoolClient
-#
-  DistributionDomain:
-    Description: CloudFront Distribution domain name
-    Value: !GetAtt ContactAppDistribution.DomainName
+  UserPoolId:
+    Description: ID of the User Pool
+    Value: !Ref ContactAppUserPool
+  UserPoolClientId:
+    Description: ID of the User Pool Client
+    Value: !Ref HtmxUserPoolClient
+  DistributionUrl:
+    Description: Distribution URL
+    Value: !Sub 'https://${ContactAppDistribution.DomainName}'
+  UserPoolDomainDistribution:
+    Description: User Pool Domain Distribution
+    Value: !GetAtt HtmxUserPoolDomain.CloudFrontDistribution
+  SignInUrl:
+    Description: Cognito Sign In URL
+    Value: !Sub 'https://${userPoolDomain}.auth.${AWS::Region}.amazoncognito.com/login?response_type=code&client_id=${HtmxUserPoolClient}&redirect_uri=https://${ContactAppDistribution.DomainName}/'
