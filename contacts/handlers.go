@@ -177,13 +177,13 @@ func HandleDeleteSelected(svc *Service, view *views.View) http.HandlerFunc {
 		}
 
 		values := r.Form["selected_contact_ids"]
-		fmt.Sprintf("Selected Contact Ids: %v", values)
+		_ = fmt.Sprintf("Selected Contact Ids: %v", values)
 		for _, id := range r.Form["selected_contact_ids"] {
-			id, err := strconv.Atoi(id)
+			idi, err := strconv.Atoi(id)
 			if err != nil {
-				fmt.Sprintf("Error converting id: %v", err)
+				_ = fmt.Sprintf("Error converting id: %v", err)
 			} else {
-				svc.Delete(id)
+				_ = svc.Delete(idi)
 			}
 		}
 		view.Render(w, r, map[string]interface{}{"Contacts": svc.All()})

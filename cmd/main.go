@@ -27,9 +27,16 @@ func main() {
 		os.Getenv("COGNITO_REDIRECT_URI"))
 
 	r := mux.NewRouter()
+
 	r.PathPrefix("/static/").Handler(http.FileServer(http.FS(staticDir)))
 	r.Handle("/",
 		http.RedirectHandler("/contacts", http.StatusTemporaryRedirect))
+	r.Handle("/app-config.js",
+		auth.HandleAppConfig(
+			os.Getenv("COGNITO_POOL_ID"),
+			os.Getenv("COGNITO_CLIENT_ID"),
+			views.NewView("partial", "auth/app-config.gohtml"))).
+		Methods("GET")
 	r.Handle("/contacts",
 		contacts.HandleIndex(cs,
 			views.NewView("partial", "contacts/rows.gohtml"))).

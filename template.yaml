@@ -43,6 +43,7 @@ Resources:
         Variables:
           COGNITO_ENDPOINT: !Sub 'https://${AWS::StackName}.auth.${AWS::Region}.amazoncognito.com/oauth2/token'
           COGNITO_CLIENT_ID: !Ref HtmxUserPoolClient
+          COGNITO_POOL_ID: !Ref ContactAppUserPool
           COGNITO_REDIRECT_URI: !Sub 'https://${gatewayDomain}/auth/code'
       Events:
         gatewayRootEvent:
