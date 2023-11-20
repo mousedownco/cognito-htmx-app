@@ -2,14 +2,14 @@
   "name": "cognito-htmx-app",
   "version": "1.0.0",
   "scripts": {
-    "build": "parcel build ts/main.ts --dist-dir dist"
+    "build": "esbuild ts/main.ts --bundle --outfile=cmd/static/js/main.js"
   },
   "dependencies": {
     "aws-amplify": "^6.0.3"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "^2.10.3",
+    "esbuild": "^0.19.6",
     "process": "^0.11.10",
     "typescript": "^5.2.2"
   }

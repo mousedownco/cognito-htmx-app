@@ -1,0 +1,16 @@
+{{ define "content" }}
+    <form id="signUpForm">
+        Username: <input type="text" id="username" name="username"/>
+        Password: <input type="password" id="password" name="password"/>
+        <button type="submit">Sign Up</button>
+    </form>
+    <script>
+        document.getElementById('signUpForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            handleSignUp(username, password);
+        });
+    </script>
+
+{{ end }}
