@@ -2,6 +2,7 @@
     <form id="signUpForm" hx-disable>
         Username: <input type="text" id="username" name="username"/>
         Password: <input type="password" id="password" name="password"/>
+        Email: <input type="email" id="email" name="email"/>
         <button type="submit">Sign Up</button>
     </form>
     <script>
@@ -9,7 +10,8 @@
             event.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            handleSignUp(username, password);
+            const email = document.getElementById('email').value;
+            handleSignUp({username, password, email});
         });
     </script>
 

@@ -6874,12 +6874,13 @@
         options: {
           userAttributes: {
             email,
-            phone_number
+            phone_number: ""
           },
           autoSignIn: true
         }
       });
       console.log("userId:", userId);
+      console.log("nextStep:", nextStep);
     } catch (error) {
       console.log("error signing up:", error);
     }

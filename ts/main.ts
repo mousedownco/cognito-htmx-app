@@ -41,7 +41,7 @@ type SignUpParams = {
     username: string;
     password: string;
     email: string;
-    phone_number?: string;
+    phone_number: string;
 }
 
 export async function handleSignUp({username, password, email, phone_number}: SignUpParams) {
@@ -52,12 +52,13 @@ export async function handleSignUp({username, password, email, phone_number}: Si
             options: {
                 userAttributes: {
                     email,
-                    phone_number
+                    phone_number: ''
                 },
                 autoSignIn: true
             }
         });
         console.log('userId:', userId);
+        console.log('nextStep:', nextStep);
     } catch (error) {
         console.log('error signing up:', error);
     }
