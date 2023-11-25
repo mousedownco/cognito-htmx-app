@@ -60,8 +60,8 @@ func main() {
 		contacts.HandleDeleteSelected(cs,
 			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml"))).Methods("POST")
 	r.Handle("/contacts",
-		contacts.HandleIndex(cs,
-			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml")))
+		auth.HandleAuth(contacts.HandleIndex(cs,
+			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml"))))
 	r.Handle("/contacts/count", contacts.HandleCountGet(cs)).Methods("GET")
 	r.Handle("/contacts/new",
 		contacts.HandleNew(views.NewView("layout", "contacts/new.gohtml"))).

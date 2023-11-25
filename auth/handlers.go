@@ -1,9 +1,17 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/mousedownco/htmx-contact-app/views"
 	"net/http"
 )
+
+func HandleAuth(h http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("Authorization: %s\n", r.Header.Get("Authorization"))
+		h(w, r)
+	})
+}
 
 func HandleAppConfig(userPoolId, clientId string, view *views.View) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

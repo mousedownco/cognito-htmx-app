@@ -8,6 +8,13 @@
         <script src="/static/js/htmx-1.9.6.min.js"></script>
         <script src="/app-config.js"></script>
         <script src="/static/js/main.js"></script>
+        <script>
+            htmx.logger = function (elt, event, data) {
+                // if (console) {
+                //     console.log(event, elt, data);
+                // }
+            }
+        </script>
     </head>
     <body hx-boost="true">
     <main>
@@ -24,5 +31,14 @@
         {{ template "content" .}}
     </main>
     </body>
+    <script>
+        document.body.addEventListener('htmx:configRequest', function (evt) {
+            handleAuthToken().then(() => {
+                console.log('loaded session');
+            }).catch((err) => {
+                console.log(err);
+            });
+        });
+    </script>
     </html>
 {{ end }}

@@ -722,6 +722,16 @@
   };
   var Amplify = new AmplifyClass();
 
+  // node_modules/@aws-amplify/core/dist/esm/singleton/apis/internal/fetchAuthSession.mjs
+  var fetchAuthSession = (amplify, options) => {
+    return amplify.Auth.fetchAuthSession(options);
+  };
+
+  // node_modules/@aws-amplify/core/dist/esm/singleton/apis/fetchAuthSession.mjs
+  var fetchAuthSession2 = (options) => {
+    return fetchAuthSession(Amplify, options);
+  };
+
   // node_modules/@aws-amplify/core/dist/esm/singleton/apis/clearCredentials.mjs
   function clearCredentials() {
     return Amplify.Auth.clearCredentials();
@@ -6916,10 +6926,19 @@
       console.log("error signing out:", error);
     }
   }
+  async function handleAuthToken() {
+    try {
+      const session = await fetchAuthSession2();
+      console.log("session:", session);
+    } catch (error) {
+      console.log("error getting current session:", error);
+    }
+  }
   window.configAuth = configAuth;
   window.handleSignUp = handleSignUp;
   window.handleSignUpConfirmation = handleSignUpConfirmation;
   window.handleSignIn = handleSignIn;
+  window.handleAuthToken = handleAuthToken;
 })();
 /*! Bundled license information:
 

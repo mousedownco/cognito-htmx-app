@@ -3,6 +3,7 @@ import {
     autoSignIn,
     confirmSignUp,
     type ConfirmSignUpInput,
+    fetchAuthSession,
     signIn,
     type SignInInput,
     signOut,
@@ -96,7 +97,20 @@ export async function handleSignOut() {
     }
 }
 
+export async function handleAuthToken() {
+    try {
+        const session = await fetchAuthSession();
+        console.log('session:', session);
+    } catch (error) {
+        console.log('error getting current session:', error);
+    }
+}
+
+
+// https://docs.amplify.aws/javascript/build-a-backend/auth/manage-user-session/
+
 (window as any).configAuth = configAuth;
 (window as any).handleSignUp = handleSignUp;
 (window as any).handleSignUpConfirmation = handleSignUpConfirmation;
 (window as any).handleSignIn = handleSignIn;
+(window as any).handleAuthToken = handleAuthToken;
