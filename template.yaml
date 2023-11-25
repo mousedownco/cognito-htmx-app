@@ -77,6 +77,8 @@ Resources:
           RequireNumbers: true
           RequireSymbols: true
           RequireUppercase: true
+      UsernameAttributes:
+        - email
       AutoVerifiedAttributes:
         - email
   HtmxUserPoolClient:

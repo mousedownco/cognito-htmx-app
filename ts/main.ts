@@ -36,23 +36,19 @@ export function configAuth(appConf: any) {
 /**
  * @see https://docs.amplify.aws/javascript/build-a-backend/auth/enable-sign-up/
  */
-
 type SignUpParams = {
-    username: string;
-    password: string;
     email: string;
-    phone_number?: string;
+    password: string;
 }
 
-export async function handleSignUp({username, password, email, phone_number}: SignUpParams) {
+export async function handleSignUp({email, password}: SignUpParams) {
     try {
         const {isSignUpComplete, userId, nextStep} = await signUp({
-            username,
+            username: email,
             password,
             options: {
                 userAttributes: {
                     email,
-                    phone_number
                 },
                 autoSignIn: true
             }
