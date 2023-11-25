@@ -9,7 +9,10 @@
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            handleSignUp({username: email, email, password});
+            handleSignUp({email, password})
+                .then((sub) => {
+                    window.location.href = '/auth/sign-up-confirm?sub=' + sub;
+                });
         });
     </script>
 {{ end }}

@@ -42,6 +42,14 @@ func main() {
 		auth.HandleSignUp(
 			views.NewView("layout", "auth/sign-up.gohtml"))).
 		Methods("GET")
+	r.Handle("/auth/sign-up-confirm",
+		auth.HandleSignUpConfirm(
+			views.NewView("layout", "auth/sign-up-confirm.gohtml"))).
+		Methods("GET")
+	r.Handle("/auth/sign-in",
+		auth.HandleSignIn(
+			views.NewView("layout", "auth/sign-in.gohtml"))).
+		Methods("GET")
 
 	r.Handle("/contacts",
 		contacts.HandleIndex(cs,

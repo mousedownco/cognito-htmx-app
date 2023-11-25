@@ -6866,21 +6866,21 @@
       }
     });
   }
-  async function handleSignUp({ username, password, email, phone_number }) {
+  async function handleSignUp({ email, password }) {
     try {
       const { isSignUpComplete: isSignUpComplete2, userId, nextStep } = await signUp2({
-        username,
+        username: email,
         password,
         options: {
           userAttributes: {
-            email,
-            phone_number: ""
+            email
           },
           autoSignIn: true
         }
       });
       console.log("userId:", userId);
       console.log("nextStep:", nextStep);
+      return userId;
     } catch (error) {
       console.log("error signing up:", error);
     }
@@ -6916,8 +6916,10 @@
       console.log("error signing out:", error);
     }
   }
-  window.handleSignUp = handleSignUp;
   window.configAuth = configAuth;
+  window.handleSignUp = handleSignUp;
+  window.handleSignUpConfirmation = handleSignUpConfirmation;
+  window.handleSignIn = handleSignIn;
 })();
 /*! Bundled license information:
 

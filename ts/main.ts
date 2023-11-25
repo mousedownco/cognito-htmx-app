@@ -54,6 +54,8 @@ export async function handleSignUp({email, password}: SignUpParams) {
             }
         });
         console.log('userId:', userId);
+        console.log('nextStep:', nextStep);
+        return userId;
     } catch (error) {
         console.log('error signing up:', error);
     }
@@ -94,5 +96,7 @@ export async function handleSignOut() {
     }
 }
 
-(window as any).handleSignUp = handleSignUp;
 (window as any).configAuth = configAuth;
+(window as any).handleSignUp = handleSignUp;
+(window as any).handleSignUpConfirmation = handleSignUpConfirmation;
+(window as any).handleSignIn = handleSignIn;
