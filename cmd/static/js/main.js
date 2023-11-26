@@ -6930,6 +6930,7 @@
     try {
       const session = await fetchAuthSession2();
       console.log("session:", session);
+      return session?.tokens?.idToken?.toString();
     } catch (error) {
       console.log("error getting current session:", error);
     }
