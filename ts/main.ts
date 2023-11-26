@@ -100,7 +100,7 @@ export async function handleSignOut() {
 export async function currentAuthToken() {
     try {
         const session = await fetchAuthSession();
-        console.log('session:', session?.tokens?.idToken?.toString());
+        console.log('session:', session?.tokens?.idToken?.toString() as string);
         return session?.tokens?.idToken?.toString() as string;
     } catch (error) {
         console.log('error getting current session:', error);

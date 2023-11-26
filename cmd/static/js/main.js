@@ -6926,10 +6926,10 @@
       console.log("error signing out:", error);
     }
   }
-  async function handleAuthToken() {
+  async function currentAuthToken() {
     try {
       const session = await fetchAuthSession2();
-      console.log("session:", session);
+      console.log("session:", session?.tokens?.idToken?.toString());
       return session?.tokens?.idToken?.toString();
     } catch (error) {
       console.log("error getting current session:", error);
@@ -6939,7 +6939,7 @@
   window.handleSignUp = handleSignUp;
   window.handleSignUpConfirmation = handleSignUpConfirmation;
   window.handleSignIn = handleSignIn;
-  window.handleAuthToken = handleAuthToken;
+  window.currentAuthToken = currentAuthToken;
 })();
 /*! Bundled license information:
 
