@@ -69,7 +69,7 @@ func main() {
 	r.Handle("/contacts/new",
 		contacts.HandleNewPost(cs, views.NewView("layout", "contacts/new.gohtml"))).Methods("POST")
 	r.Handle("/contacts/{id:[0-9]+}",
-		contacts.HandleView(cs, views.NewView("layout", "contacts/show.gohtml"))).Methods("GET")
+		auth.HandleAuth(contacts.HandleView(cs, views.NewView("layout", "contacts/show.gohtml")))).Methods("GET")
 	r.Handle("/contacts/{id:[0-9]+}/edit",
 		contacts.HandleEdit(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("GET")
 	r.Handle("/contacts/{id:[0-9]+}/edit",

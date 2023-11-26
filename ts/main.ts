@@ -97,15 +97,15 @@ export async function handleSignOut() {
     }
 }
 
-export async function handleAuthToken() {
+export async function currentAuthToken() {
     try {
         const session = await fetchAuthSession();
-        console.log('session:', session);
+        console.log('session:', session?.tokens?.idToken?.toString() as string);
+        return session?.tokens?.idToken?.toString() as string;
     } catch (error) {
         console.log('error getting current session:', error);
     }
 }
-
 
 // https://docs.amplify.aws/javascript/build-a-backend/auth/manage-user-session/
 
@@ -113,4 +113,4 @@ export async function handleAuthToken() {
 (window as any).handleSignUp = handleSignUp;
 (window as any).handleSignUpConfirmation = handleSignUpConfirmation;
 (window as any).handleSignIn = handleSignIn;
-(window as any).handleAuthToken = handleAuthToken;
+(window as any).currentAuthToken = currentAuthToken;

@@ -8,7 +8,10 @@ import (
 
 func HandleAuth(h http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("Authorization: %s\n", r.Header.Get("Authorization"))
+		m := r.Header.Get("MIKE")
+		fmt.Printf("MIKE: %s\n", m)
+		a := r.Header.Get("Authorization")
+		fmt.Printf("Authorization: %s\n", a)
 		h(w, r)
 	})
 }

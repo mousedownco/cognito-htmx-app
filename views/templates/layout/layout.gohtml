@@ -32,12 +32,14 @@
     </main>
     </body>
     <script>
-        document.body.addEventListener('htmx:configRequest', function (evt) {
-            handleAuthToken().then(() => {
-                console.log('loaded session');
-            }).catch((err) => {
+        document.body.addEventListener('htmx:configRequest', async function (evt) {
+            try {
+                const token = await currentAuthToken();
+                console.log('token', token);
+                evt.detail.headers['Authorization'] = token;  // Corrected the header name
+            } catch (err) {
                 console.log(err);
-            });
+            }
         });
     </script>
     </html>
