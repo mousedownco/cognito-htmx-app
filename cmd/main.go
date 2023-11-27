@@ -38,23 +38,16 @@ func main() {
 			os.Getenv("COGNITO_CLIENT_ID"),
 			views.NewView("partial", "auth/app-config.gohtml"))).
 		Methods("GET")
-	r.Handle("/auth/sign-up",
-		auth.HandleSignUp(
-			views.NewView("layout", "auth/sign-up.gohtml"))).
-		Methods("GET")
-	r.Handle("/auth/sign-up-confirm",
-		auth.HandleSignUpConfirm(
-			views.NewView("layout", "auth/sign-up-confirm.gohtml"))).
-		Methods("GET")
-	r.Handle("/auth/sign-in",
-		auth.HandleSignIn(
-			views.NewView("layout", "auth/sign-in.gohtml"))).
-		Methods("GET")
 
-	r.Handle("/contacts",
-		contacts.HandleIndex(cs,
-			views.NewView("partial", "contacts/rows.gohtml"))).
-		Headers("HX-Trigger", "search")
+	ar := r.PathPrefix("/auth").Subrouter()
+
+	ar.Handle("/sign-up", auth.HandleSignUp(views.NewView("layout", "auth/sign-up.gohtml"))).Methods("GET")
+	ar.Handle("/sign-up-confirm", auth.HandleSignUpConfirm(views.NewView("layout", "auth/sign-up-confirm.gohtml"))).Methods("GET")
+	ar.Handle("/sign-in", auth.HandleSignIn(views.NewView("layout", "auth/sign-in.gohtml"))).Methods("GET")
+	ar.Handle("/code", auth.HandleCognitoCallback(cog, "/contacts")).Methods("GET")
+
+	r.Handle("/contacts", contacts.HandleIndex(cs, views.NewView("partial", "contacts/rows.gohtml"))).Headers("HX-Trigger", "search")
+
 	// This handler differs from the book's implementation, see README for details
 	r.Handle("/contacts/delete",
 		contacts.HandleDeleteSelected(cs,
@@ -77,8 +70,6 @@ func main() {
 	r.Handle("/contacts/{id:[0-9]+}/email", contacts.HandleEmailGet(cs)).Methods("GET")
 	r.Handle("/contacts/{id:[0-9]+}",
 		contacts.HandleDelete(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("DELETE")
-
-	r.Handle("/auth/code", auth.HandleCognitoCallback(cog, "/contacts")).Methods("GET")
 
 	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
 		log.Printf("Running Lambda function %s", os.Getenv("AWS_LAMBDA_FUNCTION_NAME"))
