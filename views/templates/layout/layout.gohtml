@@ -33,7 +33,7 @@
     </body>
     <script>
         (async function () {
-            window.authHeader = await handleAuthToken();
+            window.authHeader = await currentAuthToken();
             console.log('loaded authHeader', window.authHeader);
         })();
     </script>
