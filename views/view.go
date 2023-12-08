@@ -15,7 +15,7 @@ var TemplatesDir = "templates"
 var LayoutDir = "layout"
 var FlashName = "_flash"
 
-//go:embed templates/layout/* templates/contacts/* templates/auth/*
+//go:embed templates/layout/* templates/contacts/* templates/auth/* templates/protected/*
 var templates embed.FS
 
 var StandardFunctions = template.FuncMap{

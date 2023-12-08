@@ -8,8 +8,14 @@ import (
 
 func HandleAuth(h http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m := r.Header.Get("MIKE")
-		fmt.Printf("MIKE: %s\n", m)
+		// TODO: Extract User Information from JWT
+		jwt, e := DecodeJwtPayload(r.Header.Get("Authorization"))
+		if e != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		fmt.Printf("JWT: %v\n", jwt)
+
 		a := r.Header.Get("Authorization")
 		fmt.Printf("Authorization: %s\n", a)
 		h(w, r)

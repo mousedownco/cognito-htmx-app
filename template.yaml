@@ -22,6 +22,12 @@ Resources:
     Properties:
       OpenApiVersion: 3.0.1
       StageName: stage
+      Auth:
+        Authorizers:
+          ContactAppAuthorizer:
+            UserPoolArn: !GetAtt ContactAppUserPool.Arn
+            Identity:
+              Header: Authorization
       Domain:
         BasePath: ""
         DomainName: !Ref gatewayDomain
@@ -52,6 +58,22 @@ Resources:
             Method: ANY
             Path: /
             RestApiId: !Ref ContactAppGateway
+        gatewayProtectedRootEvent:
+          Type: Api
+          Properties:
+            Method: ANY
+            Path: /protected
+            RestApiId: !Ref ContactAppGateway
+            Auth:
+              Authorizer: ContactAppAuthorizer
+        gatewayProtectedEvent:
+          Type: Api
+          Properties:
+            Method: ANY
+            Path: /protected/{proxy+}
+            RestApiId: !Ref ContactAppGateway
+            Auth:
+              Authorizer: ContactAppAuthorizer
         gatewayEvent:
           Type: Api
           Properties:

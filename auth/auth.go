@@ -1,11 +1,33 @@
 package auth
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
+
+type JwtPayload map[string]interface{}
+
+func DecodeJwtPayload(jwt string) (JwtPayload, error) {
+	parts := strings.Split(jwt, ".")
+	if len(parts) != 3 {
+		return nil, errors.New("incorrect number of jwt parts")
+	}
+	jp, e := base64.RawStdEncoding.DecodeString(parts[1])
+	if e != nil {
+		return nil, e
+	}
+	p := make(JwtPayload)
+	e = json.Unmarshal(jp, &p)
+	if e != nil {
+		return nil, e
+	}
+	return p, nil
+}
 
 type TokenResponse struct {
 	AccessToken  string `json:"access_token"`

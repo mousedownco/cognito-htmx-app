@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mousedownco/htmx-contact-app/auth"
 	"github.com/mousedownco/htmx-contact-app/contacts"
+	"github.com/mousedownco/htmx-contact-app/protected"
 	"github.com/mousedownco/htmx-contact-app/views"
 	"log"
 	"net/http"
@@ -46,29 +47,33 @@ func main() {
 	ar.Handle("/sign-in", auth.HandleSignIn(views.NewView("layout", "auth/sign-in.gohtml"))).Methods("GET")
 	ar.Handle("/code", auth.HandleCognitoCallback(cog, "/contacts")).Methods("GET")
 
-	r.Handle("/contacts", contacts.HandleIndex(cs, views.NewView("partial", "contacts/rows.gohtml"))).Headers("HX-Trigger", "search")
+	pr := r.PathPrefix("/protected").Subrouter()
+	pr.Handle("", protected.HandleIndex(views.NewView("layout", "protected/index.gohtml"))).Methods("GET")
+
+	cr := r.PathPrefix("/contacts").Subrouter()
+	cr.Handle("", contacts.HandleIndex(cs, views.NewView("partial", "contacts/rows.gohtml"))).Headers("HX-Trigger", "search")
 
 	// This handler differs from the book's implementation, see README for details
-	r.Handle("/contacts/delete",
+	cr.Handle("/delete",
 		contacts.HandleDeleteSelected(cs,
 			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml"))).Methods("POST")
-	r.Handle("/contacts",
+	cr.Handle("",
 		auth.HandleAuth(contacts.HandleIndex(cs,
 			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml"))))
-	r.Handle("/contacts/count", contacts.HandleCountGet(cs)).Methods("GET")
-	r.Handle("/contacts/new",
+	cr.Handle("/count", contacts.HandleCountGet(cs)).Methods("GET")
+	cr.Handle("/new",
 		contacts.HandleNew(views.NewView("layout", "contacts/new.gohtml"))).
 		Methods("GET")
-	r.Handle("/contacts/new",
+	cr.Handle("/new",
 		contacts.HandleNewPost(cs, views.NewView("layout", "contacts/new.gohtml"))).Methods("POST")
-	r.Handle("/contacts/{id:[0-9]+}",
+	cr.Handle("/{id:[0-9]+}",
 		auth.HandleAuth(contacts.HandleView(cs, views.NewView("layout", "contacts/show.gohtml")))).Methods("GET")
-	r.Handle("/contacts/{id:[0-9]+}/edit",
+	cr.Handle("/{id:[0-9]+}/edit",
 		contacts.HandleEdit(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("GET")
-	r.Handle("/contacts/{id:[0-9]+}/edit",
+	cr.Handle("/{id:[0-9]+}/edit",
 		contacts.HandleEditPost(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("POST")
-	r.Handle("/contacts/{id:[0-9]+}/email", contacts.HandleEmailGet(cs)).Methods("GET")
-	r.Handle("/contacts/{id:[0-9]+}",
+	cr.Handle("/{id:[0-9]+}/email", contacts.HandleEmailGet(cs)).Methods("GET")
+	cr.Handle("/{id:[0-9]+}",
 		contacts.HandleDelete(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("DELETE")
 
 	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
