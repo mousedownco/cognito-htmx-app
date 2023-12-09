@@ -29,6 +29,18 @@ func DecodeJwtPayload(jwt string) (JwtPayload, error) {
 	return p, nil
 }
 
+type User struct {
+	Id    string
+	Email string
+}
+
+func JwtUser(payload JwtPayload) User {
+	return User{
+		Id:    payload["sub"].(string),
+		Email: payload["email"].(string),
+	}
+}
+
 type TokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	IdToken      string `json:"id_token"`

@@ -48,7 +48,7 @@ func main() {
 	ar.Handle("/code", auth.HandleCognitoCallback(cog, "/contacts")).Methods("GET")
 
 	pr := r.PathPrefix("/protected").Subrouter()
-	pr.Handle("", protected.HandleIndex(views.NewView("layout", "protected/index.gohtml"))).Methods("GET")
+	pr.Handle("", auth.HandleAuth(protected.HandleIndex(views.NewView("layout", "protected/index.gohtml")))).Methods("GET")
 
 	cr := r.PathPrefix("/contacts").Subrouter()
 	cr.Handle("", contacts.HandleIndex(cs, views.NewView("partial", "contacts/rows.gohtml"))).Headers("HX-Trigger", "search")
@@ -57,9 +57,8 @@ func main() {
 	cr.Handle("/delete",
 		contacts.HandleDeleteSelected(cs,
 			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml"))).Methods("POST")
-	cr.Handle("",
-		auth.HandleAuth(contacts.HandleIndex(cs,
-			views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml"))))
+	cr.Handle("", contacts.HandleIndex(cs,
+		views.NewView("layout", "contacts/index.gohtml", "contacts/rows.gohtml")))
 	cr.Handle("/count", contacts.HandleCountGet(cs)).Methods("GET")
 	cr.Handle("/new",
 		contacts.HandleNew(views.NewView("layout", "contacts/new.gohtml"))).
@@ -67,7 +66,7 @@ func main() {
 	cr.Handle("/new",
 		contacts.HandleNewPost(cs, views.NewView("layout", "contacts/new.gohtml"))).Methods("POST")
 	cr.Handle("/{id:[0-9]+}",
-		auth.HandleAuth(contacts.HandleView(cs, views.NewView("layout", "contacts/show.gohtml")))).Methods("GET")
+		contacts.HandleView(cs, views.NewView("layout", "contacts/show.gohtml"))).Methods("GET")
 	cr.Handle("/{id:[0-9]+}/edit",
 		contacts.HandleEdit(cs, views.NewView("layout", "contacts/edit.gohtml"))).Methods("GET")
 	cr.Handle("/{id:[0-9]+}/edit",

@@ -1,12 +1,13 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/mousedownco/htmx-contact-app/views"
 	"net/http"
 )
 
-func HandleAuth(h http.HandlerFunc) http.Handler {
+type UserHandlerFunc func(http.ResponseWriter, *http.Request, User)
+
+func HandleAuth(h UserHandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Extract User Information from JWT
 		jwt, e := DecodeJwtPayload(r.Header.Get("Authorization"))
@@ -14,11 +15,8 @@ func HandleAuth(h http.HandlerFunc) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		fmt.Printf("JWT: %v\n", jwt)
-
-		a := r.Header.Get("Authorization")
-		fmt.Printf("Authorization: %s\n", a)
-		h(w, r)
+		user := JwtUser(jwt)
+		h(w, r, user)
 	})
 }
 
