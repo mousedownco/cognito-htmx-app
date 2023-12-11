@@ -1,5 +1,7 @@
-Hypermedia Systems - Contact App
-================================
+> [!IMPORTANT]
+> This was a fork of the `htmx-contact-app` repository that was meant to show how to integrate AWS Cognito with HTMX. I've move that demo to a the simpler [`htmx-cognito-demo`](https://github.com/mousedownco/htmx-cognito-demo) project.
+
+
 
 ## Cognito Integration
 
