@@ -2392,7 +2392,7 @@ return (function () {
             if(elt.name === "" || elt.name == null || elt.disabled) {
                 return false;
             }
-            // ignore "submitter" types (see jQuery src/serialize.js)
+            // ignore "submitter" types (see jQuery src/serialize.ts)
             if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
                 return false;
             }
@@ -2778,7 +2778,7 @@ return (function () {
                 if (str.indexOf("javascript:") === 0) {
                     str = str.substr(11);
                     evaluateValue = true;
-                } else if (str.indexOf("js:") === 0) {
+                } else if (str.indexOf("ts:") === 0) {
                     str = str.substr(3);
                     evaluateValue = true;
                 }

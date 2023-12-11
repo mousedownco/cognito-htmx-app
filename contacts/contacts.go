@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"sort"
 	"strings"
 )
@@ -19,13 +18,9 @@ type Contact struct {
 	Email string `json:"email"`
 }
 
-func NewService(dbPath string) *Service {
-	dbb, e := os.ReadFile(dbPath)
-	if e != nil {
-		panic(e)
-	}
+func NewService() *Service {
 	var contacts []Contact
-	e = json.Unmarshal(dbb, &contacts)
+	e := json.Unmarshal([]byte(dbJson), &contacts)
 	if e != nil {
 		panic(e)
 	}
@@ -33,7 +28,7 @@ func NewService(dbPath string) *Service {
 	for _, c := range contacts {
 		db[c.Id] = c
 	}
-	return &Service{DbPath: dbPath, Contacts: db}
+	return &Service{DbPath: "", Contacts: db}
 }
 
 type Service struct {
@@ -124,5 +119,6 @@ func (s *Service) SaveDb() error {
 	if e != nil {
 		return e
 	}
-	return os.WriteFile(s.DbPath, dbb, os.ModePerm)
+	fmt.Printf("DB: \n%q", string(dbb))
+	return nil
 }
